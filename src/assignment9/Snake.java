@@ -2,6 +2,8 @@ package assignment9;
 
 import java.util.LinkedList;
 
+import edu.princeton.cs.introcs.StdDraw;
+
 public class Snake {
 
 	private static final double SEGMENT_SIZE = 0.02;
@@ -9,11 +11,16 @@ public class Snake {
 	private LinkedList<BodySegment> segments;
 	private double deltaX;
 	private double deltaY;
+	private int count;
 	
 	public Snake() {
 		//FIXME - set up the segments instance variable
 		deltaX = 0;
 		deltaY = 0;
+		segments = new LinkedList<>();
+		BodySegment segment = new BodySegment(.5, .5, SEGMENT_SIZE);
+		segments.add(segment);
+		count = 0;
 	}
 	
 	public void changeDirection(int direction) {
@@ -38,6 +45,11 @@ public class Snake {
 	 */
 	public void move() {
 		//FIXME
+		BodySegment head = segments.getFirst();
+		double newX = head.getX()+ deltaX; //moves x and y
+		double newY = head.getY()+ deltaY;
+		segments.addFirst(new BodySegment(newX, newY, SEGMENT_SIZE)); //adds new segment to front of the list
+		segments.removeLast(); //removes last segment
 	}
 	
 	/**
@@ -45,6 +57,9 @@ public class Snake {
 	 */
 	public void draw() {
 		//FIXME
+		for (BodySegment segment : segments) {//for each segment in list segments
+			segment.draw();
+		}
 	}
 	
 	/**
@@ -54,7 +69,19 @@ public class Snake {
 	 */
 	public boolean eatFood(Food f) {
 		//FIXME
+		BodySegment head = segments.getFirst();
+		if (Math.abs(head.getX() - f.getX()) < .04 && Math.abs(head.getY() - f.getY())< .04) {
+			double lastX = segments.getLast().getX();
+			double lastY = segments.getLast().getY();
+			segments.add(new BodySegment(lastX, lastY, SEGMENT_SIZE));//adds a new segment in the position of the last segment
+			this.count++;
+			StdDraw.text(0.9,0.9, "Score: " + count);
+			return true;
+		}
 		return false;
+	}
+	public int getCount() {
+		return count;
 	}
 	
 	/**
@@ -63,6 +90,7 @@ public class Snake {
 	 */
 	public boolean isInbounds() {
 		//FIXME
-		return true;
+		BodySegment head = segments.getFirst();
+		return head.getX() >= 0 && head.getX() <= 1 && head.getY() >= 0 && head.getY() <= 1; //return true or false
 	}
 }
